@@ -77,7 +77,7 @@ The following are the key GitHub API endpoints used in this project:
 
 ### Links
 
-- Live Site URL: [Live Demo]()
+- Live Site URL: [Live Demo](https://shroukouda.github.io/GitFinder/)
 
 ## My process
 

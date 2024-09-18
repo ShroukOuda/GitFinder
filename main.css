@@ -1,0 +1,422 @@
+:root {
+    --Blue: hsl(212, 100%, 50%);
+    --Light-blue: hsl(217, 20%, 51%);
+    --Dark-blue-1: hsl(217, 35%, 45%);
+    --Dark-blue-2: hsl(222, 41%, 20%);
+    --Dark-blue-3: hsl(217, 21%, 21%);
+    --Dark-blue-4: hsl(220, 40%, 13%);
+    --Very-light-blue: hsl(227, 100%, 98%);
+    --White: hsl(0, 0%, 100%);
+}
+html {
+    box-sizing: border-box;
+    
+}
+*,
+::after,
+::before {
+    box-sizing: inherit;
+    padding: 0;
+    margin: 0;
+}
+body {
+    font-family: 'Space Mono', sans-serif;
+    padding: 20px 40px;
+    background-color: var(--Dark-blue-4);
+}
+body .header {
+    display: flex;
+    justify-content: space-between;
+}
+.header .logo {
+    color: #fff;
+    font-weight: 800;
+    font-size: 40px;
+}
+.header .logo .finder {
+    color: var(--Blue);
+}
+.header form {
+    width: 400px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #1e2a47 ;
+    border-radius: 7px;
+    padding: 0 10px;
+}
+.header form i {
+    color: var(--Blue);
+}
+.header form input {
+    border: none;
+    outline: none;
+    background-color: #1e2a47;
+    color: #fff;
+}
+.header form input::placeholder {
+    color: var(--Dark-blue-1); 
+}
+.header form .btn {
+    margin-left: auto;
+}
+.header form button {
+    padding: 10px;
+    text-align: center;
+    background-color: var(--Blue);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 30px;
+}
+.header .links {
+    display: none;
+}
+.container {
+    display: flex;
+    padding-top: 40px; 
+}
+.container aside {
+    flex: 1;
+}
+.container aside .user-profile {
+    margin: 20px auto;
+    padding: 20px;
+
+}
+
+.container aside .user-profile .flex {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+.container aside .user-profile picture {
+    width: 150px;
+    height: 150px;
+}
+
+.container aside .user-profile picture .avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.container aside .user-profile header {
+    margin-left: 20px;
+}
+
+.container aside .user-profile header h2 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #fff;
+}
+
+.container aside .user-profile header h4 {
+    color: var(--Blue);
+}
+
+.container aside .user-profile header p {
+    color: var(--Dark-blue-1);
+}
+
+.container aside .user-profile .bio {
+    color: var(--Dark-blue-1);
+}
+.container aside .user-profile .bio,
+.container aside .user-profile .github-link,
+.container aside .user-profile .assets,
+.container aside .user-profile .links {
+    margin-bottom: 20px;
+}
+.container aside .user-profile .github-link i {
+    color: var(--Blue)
+}
+.container aside .user-profile .github-link a {
+    text-decoration: none;
+    color: var(--Blue);
+    font-weight: bold;
+}
+
+.container aside .user-profile .github-link a:hover {
+    text-decoration: underline;
+}
+.container aside .user-profile .assets {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: var(--Light-blue);
+    font-size: 20px;
+}
+.container aside .user-profile .assets p{
+  display: flex;
+  gap: 10px;
+}
+
+.container aside .user-profile .links {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    column-gap: 15px;
+    row-gap: 25px;
+    font-size: 20px;
+    color: var(--Dark-blue-1)
+}
+
+.container aside .user-profile .links div {
+    display: flex;
+    gap: 20px;
+}
+
+.container aside .user-profile .links i {
+   font-size: 20px;
+}
+
+.container aside .user-profile .links a {
+    color: var(--Dark-blue-1);
+    text-decoration: none;
+}
+
+.container aside .user-profile .links a:hover {
+    text-decoration: underline;
+}
+/* End Profile Styling */
+.container main {
+    flex: 2;
+}
+main .links ul{
+    display: flex;
+    justify-content: space-around;
+    list-style: none;
+    font-size: 18px;
+}
+main .links ul a {
+    text-decoration: none;
+    color: #fff;
+}
+/* main .links ul a:active,
+main .links ul a:hover {
+    color: var(--Blue);
+    font-size: 20px;
+    border-bottom: 4px solid hsl(212, 100%, 50%);
+    padding: 10px;
+} */
+main hr {
+    margin-top: 10px;
+    border: 1px solid var(--Light-blue);
+    width: 80%;
+    opacity: 0.3;
+    margin-left: auto;
+    margin-right: auto;
+    height: 1px;
+}
+main .show-data {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+main .show-data .repo-box {
+    margin-top: 30px;
+    background-color: var(--Dark-blue-2);
+    border-radius: 7px;
+    padding: 20px;
+    color: #fff;
+}
+main .show-data .repo-box .repo-link{
+    background-color: var(--Dark-blue-4);
+    margin-top: 10px;
+    text-align: center;
+    color: var(--Blue);
+    padding: 10px;
+    border-radius: 7px;
+}
+main .show-data .repo-box .repo-link a {
+    text-decoration: none;
+    color: var(--White);
+    padding-left: 10px;
+}
+main .show-data .repo-box .repo-link a:hover,
+main .show-data .repo-box .repo-link a:active {
+    color: var(--Blue);
+    transition: 1s;
+}
+/* End Repos */
+main .show-data .follower-box {
+    background-color: var(--Dark-blue-2);
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 7px;
+}
+main .show-data .follower-box .flex {
+    display: flex;
+    gap: 10px;
+}
+main .show-data .follower-box picture{
+    display: block;
+   width: 60px;
+   height: 60px;
+}
+main .show-data .follower-box picture img {
+    width: 100%;
+    border-radius: 50%;
+}
+main .show-data .follower-box .github-link {
+    background-color: var(--Dark-blue-4);
+    margin-top: 10px;
+    text-align: center;
+    color: var(--Blue);
+    padding: 10px;
+    border-radius: 7px;
+}
+main .show-data .follower-box .github-link a {
+    text-decoration: none;
+    color: #fff;
+}
+main .show-data .follower-box .github-link a:hover,
+main .show-data .follower-box .github-link a:active {
+    color: var(--Blue);
+    transition: 1s;
+}
+main .show-data .follower-box header h2 {
+    margin: 0;
+    color: #fff;
+}
+main .show-data .follower-box header h4 {
+    margin: 0;
+    color: var(--Light-blue);
+}
+
+.active {
+    color: hsl(212, 100%, 50%);
+    border-bottom: 4px solid hsl(212, 100%, 50%);
+    padding: 10px;
+}
+/* Responsive styles */
+@media (max-width: 768px) {
+    /* Adjust the header layout */
+    .header {
+        flex-direction: column;
+    }
+
+    .header .logo {
+        font-size: 25px; /* Reduce font size for logo */
+    }
+
+    .header form {
+        width: 80%; /* Full width form on mobile */
+        margin: 10px auto;
+        padding: 10px;
+    }
+
+    .header form input {
+        font-size: 14px; /* Reduce font size for input field */
+    }
+
+    .header form button {
+        padding: 8px 15px; /* Smaller padding for the button */
+        margin-left: 0;
+    }
+
+    /* Stack aside and main vertically */
+    .container {
+        flex-direction: column;
+        padding-top: 20px;
+    }
+
+    /* Center the profile content in aside */
+    .container aside {
+        display: grid;
+        place-items: center;
+        width: 100%;
+        padding: 0 10px;
+    }
+
+    .container aside .user-profile picture {
+        width: 100px;
+        height: 100px;
+    }
+
+    /* Adjust links layout */
+    .container aside .user-profile .links {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    /* Show-data section responsiveness */
+    main .show-data {
+        grid-template-columns: 1fr; /* One column layout */
+    }
+
+    /* Adjust repo and follower boxes */
+    main .show-data .repo-box, 
+    main .show-data .follower-box {
+        padding: 15px;
+    }
+
+    main .show-data .repo-box .repo-link,
+    main .show-data .follower-box .github-link {
+        font-size: 14px; /* Reduce link size */
+        padding: 8px;
+    }
+
+    /* Typography adjustments */
+    main .links ul a {
+        font-size: 16px; /* Reduce link font size */
+    }
+}
+
+@media (max-width: 576px) {
+    /* Further scaling down for small mobile devices */
+    
+    .header .logo {
+        font-size: 20px;
+    }
+
+    .header form input {
+        font-size: 12px;
+    }
+
+    .header form button {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    /* Padding and layout adjustments for smaller screens */
+    body {
+        padding: 10px;
+    }
+
+    .container aside {
+        padding: 0 5px;
+    }
+
+    .container aside .user-profile .links {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+    }
+    main .links ul a {
+        font-size: 14px;
+    }
+
+    /* Show-data section */
+    main .show-data {
+        grid-template-columns: 1fr; /* Single column on very small screens */
+    }
+
+    main .show-data .repo-box, 
+    main .show-data .follower-box {
+        padding: 10px; /* Reduced padding for smaller screens */
+    }
+
+    main .show-data .repo-box .repo-link,
+    main .show-data .follower-box .github-link {
+        font-size: 12px; /* Adjust link size */
+        padding: 6px;
+    }
+}
+
+
+/* ************************* */

@@ -1,86 +1,86 @@
-
-
 let theInput = document.querySelector("header form input");
 let getButton = document.querySelector("header form button");
 let aside_section = document.querySelector("aside");
 let showData = document.querySelector("main .show-data");
 
 
+const defaultUser = 'ShroukOuda';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Define the default user
-    const defaultUser = 'ShroukOuda';
-    if (!theInput.value)
-        theInput.value = defaultUser;
-    displayUserProfile();
-    getRepos();
-   
+    if (!theInput.value) theInput.value = defaultUser;
+    
+
+    const repoTab = document.querySelector("main .links .repositry");
+    if (repoTab) {
+        repoTab.classList.add('active');
+    }
+    
+    updateProfile();
 });
 
 
-// Prevent form submission and refresh
-document.querySelector("header form").onsubmit = function(event) {
-    event.preventDefault(); // Prevent the form from submitting
-    displayUserProfile();
-    getRepos();
-};
-let previousElement = null; 
-
-// Helper function to handle click events and apply styles
-function handleClick(selector, callback) {
-    const element = document.querySelector(selector);
-    element.onclick = function() {
-        callback(); // Call the respective function (getRepos, getFollowing, etc.)
-
-         // Reset the style of the previously clicked element if it exists
-        if (previousElement) {
-            previousElement.classList.remove('active');
+async function updateProfile() {
+    await displayUserProfile();
+    
+  
+    const activeTab = document.querySelector('.active');
+    if (activeTab) {
+        if (activeTab.classList.contains('repositry')) {
+            await getRepos();
+        } else if (activeTab.classList.contains('following')) {
+            getFollowing();
+        } else if (activeTab.classList.contains('followers')) {
+            getFollowers();
         }
-
-        // Apply styles to the currently clicked element
-        element.classList.add('active');
-
-        // Update previousElement to the current one
-        previousElement = element;
-
-    };
-}
-handleClick("main .links .repositry", getRepos);
-handleClick("main .links .following", getFollowing);
-handleClick("main .links .followers", getFollowers);
-
-
-function check_link(link) {
-    if (link)
-        return link;
-    else
-        return 'Not Available'
-}
-
-function check_name(user, name) {
-    if (name)
-        return name;
-    else
-        return user.login;
+    } else {
+        await getRepos();
+    }
 }
 
 
+document.querySelector("header form").onsubmit = function(event) {
+    event.preventDefault();
+    updateProfile();
+};
+
+const links = document.querySelector("main .links");
+links.addEventListener('click', (e) => {
+    const target = e.target.closest('.repositry, .following, .followers');
+    if (!target) return;
 
 
+    document.querySelector('.active')?.classList.remove('active');
+    target.classList.add('active');
 
-function displayUserProfile() {
-   
-    fetch(`https://api.github.com/users/${theInput.value}`)
-    .then((response) => response.json())
 
-    .then((user) => {
+    if (target.classList.contains('repositry')) getRepos();
+    else if (target.classList.contains('following')) getFollowing();
+    else if (target.classList.contains('followers')) getFollowers();
+});
 
+
+const check_link = link => link || 'Not Available';
+const check_name = (user, name) => name || user.login;
+
+
+async function displayUserProfile() {
+    try {
+        const response = await fetch(`https://api.github.com/users/${theInput.value}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const user = await response.json();
+        
         const dateObj = new Date(user.created_at);
-        const day = dateObj.getDate();
-        const month = dateObj.toLocaleString('en-US', { month: 'long' });
-        const year = dateObj.getFullYear();
-        const joinDate = `${day} ${month} ${year}`;
-        const bioSection = user.bio ? `<p>${user.bio}</p>` : '<p>This profile has no bio</p>';
+        const joinDate = dateObj.toLocaleDateString('en-US', { 
+            day: 'numeric', 
+            month: 'long', 
+            year: 'numeric' 
+        });
+
+        const bioSection = user.bio || 'No bio available';
 
         aside_section.innerHTML = `
         <section class="user-profile">
@@ -91,7 +91,7 @@ function displayUserProfile() {
                 <header>
                     <h2>${check_name(user, user.name)}</h2>
                     <h4>@${user.login}</h4>
-                    <p>Joined <time datetime="${joinDate}">${joinDate}</time></p>
+                    <p>Joined <time datetime="${user.created_at}">${joinDate}</time></p>
                 </header>
             </div>
             <section class="bio">
@@ -102,9 +102,9 @@ function displayUserProfile() {
                 <a target="_blank" href="https://github.com/${theInput.value}" aria-label="See ${user.login}'s profile on GitHub">See on GitHub</a>
             </section>
             <section class="assets">
-                    <p><span>${user.public_repos}</span>Reops<p>
-                    <p><span>${user.followers}</span>Followers<p>
-                    <p><span>${user.following}</span>Following<p>
+                <p><span>${user.public_repos}</span>Repos</p>
+                <p><span>${user.followers}</span>Followers</p>
+                <p><span>${user.following}</span>Following</p>
             </section>
             <section class="links">
                 <div class="location">
@@ -121,165 +121,102 @@ function displayUserProfile() {
                 </div>
                 <div class="twitter">
                     <div class="twitter-icon"><i class="fa-brands fa-twitter"></i></div>
-                    <a href="https://twitter.com/${user.twitter_username}" target="_blank" rel="noopener" aria-label="Visit ${user.company}'s Twitter profile">${check_link(user.twitter_username)}</a>
+                    <a href="https://twitter.com/${user.twitter_username}" target="_blank" rel="noopener" aria-label="Visit ${user.login}'s Twitter profile">${check_link(user.twitter_username)}</a>
                 </div>
             </section>
-
         </section>
-        `
-    })
+        `;
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        aside_section.innerHTML = '<p>Error loading user profile</p>';
+    }
 }
 
 
-/***********************************************************************************************/
-function getRepos() {
-    if (!theInput.value) { // Check for empty input
+async function getRepos() {
+    if (!theInput.value) {
         console.error("Username input is empty.");
         return;
     }
-    else
-    {
-         // Empty the container
+
+    try {
         showData.innerHTML = '';
-        fetch(`https://api.github.com/users/${theInput.value}/repos`)
-        .then((response) => response.json())
-        .then((repos) => {
-        // Loop through each repo
-        repos.forEach(repo => {
-            // Create the main div element
-            let mainDiv = document.createElement("div");
-
-            // Create Repo Name Div
-            let repoDiv = document.createElement("div");
-
-            // Create Repo Name Text
-            let repoName = document.createTextNode(repo.name);
-
-            // Append the Repo Name to the Repo Div
-            repoDiv.appendChild(repoName);
-
-            // Create Repo URL Anchor
-            let theUrl = document.createElement('a');
-
-            // Create Repo URL Text
-            let theUrlText = document.createTextNode("See on GitHub");
-
-            // Append the URL text to the anchor tag
-            theUrl.appendChild(theUrlText);
-
-            // Add the hyperlink reference (href)
-            theUrl.href = `https://github.com/${theInput.value}/${repo.name}`;
-
-            // Set target to open link in new tab
-            theUrl.setAttribute('target', '_blank');
-            // Create repoLink Div
-            let repoLink = document.createElement("div");
-            //Append icon 
-            repoLink.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i>';
-            // Append the URL anchor to the repo-link
-            repoLink.appendChild(theUrl);
-            repoLink.className = "repo-link";
-            // Append repoLinK TO repoDiv
-            repoDiv.appendChild(repoLink);
-
-            // Append the Repo Div to the Main Div
-            mainDiv.appendChild(repoDiv);
-
-            //Fetch languages used in the repo
+        const response = await fetch(`https://api.github.com/users/${theInput.value}/repos`);
         
-            // fetch(`https://api.github.com/repos/${theInput.value}/${repo.name}/languages`)
-            // .then((response) => response.json())
-            // .then((langs) => {
-            //     // Create a Languages Div
-            //     let languagesDiv = document.createElement('div');
-
-            //     // Get languages as a string
-            //     let languagesText = document.createTextNode(`Languages: ${Object.keys(langs).join(', ')}`);
-
-            //     // Append the languages text to the Languages Div
-            //     languagesDiv.appendChild(languagesText);
-
-            //     // Append the Languages Div to the Main Div
-            //     mainDiv.appendChild(languagesDiv);
-
-            //      // Create the div for stats (stars, forks, watchers)
-            //     let statsDiv = document.createElement("div");
-
-            //     // Create Stars Count Span
-            //     let starsSpan = document.createElement('span');
-            //     starsSpan.innerHTML = `<i class="fa-regular fa-star"></i> ${repo.stargazers_count}`;
-            //     statsDiv.appendChild(starsSpan);
-
-            //     // Create Forks Count Span
-            //     let forksSpan = document.createElement('span');
-            //     forksSpan.innerHTML = `<i class="fa-solid fa-code-fork"></i> ${repo.forks_count}`;
-            //     statsDiv.appendChild(forksSpan);
-
-            //     // Create Watchers Count Span
-            //     let watchersSpan = document.createElement('span');
-            //     watchersSpan.innerHTML = `<i class="fa-regular fa-eye"></i> ${repo.watchers_count}`;
-            //     statsDiv.appendChild(watchersSpan);
-
-            //     // Append the stats div to the Main Div
-            //     mainDiv.appendChild(statsDiv);
-
-            //    
-
-            //     
-            // });
-
-            
-
-           /******************************************************************************************/
-           /******************************************************************************************/ 
-            // Add class to the Main Div for styling
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const repos = await response.json();
+        
+        const fragment = document.createDocumentFragment();
+        
+        repos.forEach(repo => {
+            const mainDiv = document.createElement("div");
             mainDiv.className = 'repo-box';
-            // Append Main Div To ShowData
-            showData.appendChild(mainDiv);
+            mainDiv.innerHTML = `
+                <div>
+                    ${repo.name}
+                    <div class="repo-link">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <a href="https://github.com/${theInput.value}/${repo.name}" target="_blank">See on GitHub</a>
+                    </div>
+                </div>
+            `;
+            fragment.appendChild(mainDiv);
         });
-    });
+        
+        showData.appendChild(fragment);
+    } catch (error) {
+        console.error('Error fetching repos:', error);
+        showData.innerHTML = '<p>Error loading repositories</p>';
+    }
 }
-}
 
 
-/*********************************************************************************************/
-
-function fetchAndDisplay(url, processData) {
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => processData(data))
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-            showData.innerHTML = 'Failed to load data.';
-        });
+async function fetchAndDisplay(url, processData) {
+    try {
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        processData(data);
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        showData.innerHTML = '<p>Failed to load data.</p>';
+    }
 }
 
 function displayFollowersOrFollowing(items) {
     showData.innerHTML = '';
+    
+    const fragment = document.createDocumentFragment();
+    
     items.forEach(item => {
-        showData.innerHTML += `
-            <div class="follower-box">
-                <div class="flex">
-                    <picture>
-                        <img src="${item.avatar_url}" alt="Avatar of ${item.login}" class="avatar">
-                    </picture>
-                    <header>
-                        <h2>${check_name(item, item.name)}</h2>
-                        <h4>@${item.login}</h4>
-                    </header>
-                </div>
-                <section class="github-link">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    <a target="_blank" href="https://github.com/${item.login}" aria-label="See ${item.login}'s profile on GitHub">See on GitHub</a>
-                </section>
+        const div = document.createElement('div');
+        div.className = 'follower-box';
+        div.innerHTML = `
+            <div class="flex">
+                <picture>
+                    <img src="${item.avatar_url}" alt="Avatar of ${item.login}" class="avatar">
+                </picture>
+                <header>
+                    <h2>${check_name(item, item.name)}</h2>
+                    <h4>@${item.login}</h4>
+                </header>
             </div>
+            <section class="github-link">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                <a target="_blank" href="https://github.com/${item.login}" aria-label="See ${item.login}'s profile on GitHub">See on GitHub</a>
+            </section>
         `;
+        fragment.appendChild(div);
     });
+    
+    showData.appendChild(fragment);
 }
 
 function getFollowers() {
@@ -291,4 +228,3 @@ function getFollowing() {
     const url = `https://api.github.com/users/${theInput.value}/following`;
     fetchAndDisplay(url, displayFollowersOrFollowing);
 }
-
